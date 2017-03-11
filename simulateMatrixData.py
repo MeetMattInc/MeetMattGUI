@@ -14,8 +14,8 @@ def simulateMatrixData():
             values.append([round(random()) for x in range(col)])
 
     num = round(random())
-    user = ['User 1', 'User 2'][num]
-    weight = ['180kg', '200kg'][num]
+    user = ['Marc', 'Lucas'][num]
+    weight = ['180', '200'][num]
 
     return user, weight, values
 
