@@ -4,6 +4,7 @@ import pickle, time, os, queue
 from MeetMattGui import *
 from simulateMatrixData import simulateMatrixData
 from GuiMatrixClient import *
+import datetime
 
 obj_type = ''
 value = ''
@@ -19,21 +20,26 @@ class SignalThread(QThread):
     def __init__(self, event):
         super().__init__()
         self.event = event
+        #self.setPriority()
 
     def run(self):
         global runThread
         global guiUpdatedFlag
         global dataQueue
 
+        self.setPriority(QThread.HighestPriority)
+
         while runThread:
             while True:
                 if dataQueue.empty():
-                    # print("Queue is empty")
+                    print("Queue is empty")
                     continue
+                print("Emitting signal ",str(datetime.datetime.now()))
                 print("Emitting signal")
                 self.event.writeData.emit()
                 while not guiUpdatedFlag:
                     continue
+                print("GUI Updated ",str(datetime.datetime.now()))
                 guiUpdatedFlag = False
 
 
@@ -48,9 +54,11 @@ class DataThread(QThread):
         global runThread
         global dataQueue
 
+        self.setPriority(QThread.LowestPriority)
+
         while runThread:
             value = self.client.getDataAndType()
-            print("Value:", value)
+           # print("Value:", value)
             if value == '':
                 print("Nothing")
                 continue
@@ -86,13 +94,15 @@ class MattGui(Ui_MainWindow):
     def setMatrix(self):
         global guiUpdatedFlag
 
+        print("start ",str(datetime.datetime.now()))
         obj_type, value = dataQueue.get()
         if "velostat" in value:
             print('Weight and velostat')
-            self.lineEdit_2.setText(str(value["velostat"]))
+            #self.lineEdit_2.setText(str(value["velostat"]))
+            pMap = value["velostat"]
             for row in range(29):
                 for col in range(43):
-                    if value["velostat"][row][col]:
+                    if pMap[row][col]:
                         self.matrix[row][col].setStyleSheet("QFrame { background-color: green }")
                     else:
                         self.matrix[row][col].setStyleSheet("QFrame { background-color: rgb(236,236,236)}")
@@ -104,7 +114,7 @@ class MattGui(Ui_MainWindow):
         value = ''
         obj_type = ''
         guiUpdatedFlag = True
-
+        print("stop ",str(datetime.datetime.now()))
 
     def clearMatrix(self):
         self.lineEdit.setText('')

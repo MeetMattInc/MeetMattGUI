@@ -5,7 +5,7 @@ import socket, sys, pickle, time, json
 class GuiMatrixClient():
     def __init__(self):
         self.HOST = 'localhost'
-        #self.HOST = '192.168.2.201'
+        self.HOST = '192.168.2.201'
         self.PORT = 1000
         self.clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.clientsocket.connect((self.HOST, self.PORT))
@@ -21,7 +21,7 @@ class GuiMatrixClient():
                 time.sleep(0.001)
 
             #print("decoding: %s"%(line))
-            #print(len(line))
+            print(len(line))
             return json.loads(line)
 
         except KeyboardInterrupt:
@@ -46,7 +46,7 @@ if __name__ == "__main__":
             continue
         elif value == 'quit':
             break
-        time.sleep(1)
+        time.sleep(0.001)
 
     print("Connection closed.")
     client.closeConnection()
