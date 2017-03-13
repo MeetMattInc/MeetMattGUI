@@ -4,6 +4,8 @@
 import socket, sys, pickle, time, random
 from random import randint
 from simulateMatrixData import simulateMatrixData
+import json
+
 
 class MeetMattGUIServer():
     def __init__(self, host='', port=1000):
@@ -18,9 +20,12 @@ class MeetMattGUIServer():
         self.connection, self.client_address = self.serversocket.accept()
 
     def sendPythonObject(self, obj):
-        pickledObject = pickle.dumps(obj)
-        self.connection.sendall(pickledObject)
-        self.connection.sendall(str.encode('.\n'))
+        # pickledObject = pickle.dumps(obj)
+        # self.connection.sendall(pickledObject)
+        # self.connection.sendall(str.encode('.\n'))
+        data = json.dumps(obj).encode('utf-8')
+        self.connection.sendall(data)
+        self.connection.sendall('\n'.encode('utf-8'))
 
     def cleanup(self):
         if self.connection != None:
@@ -35,25 +40,39 @@ if __name__ == "__main__":
     try:
         server.waitForIncomingConnection()
 
+        count = 0
+        time.sleep(6)
         while True:
-            inn = input("Send Data")
-            if inn  == 'Q':
+            if count > 4:
                 break
-            if inn == '':
-                a, b, testData = simulateMatrixData()
+            user, weight, velostat = simulateMatrixData()
+            # print("User only", user)
+            print("New User:", user)
+            print("New Weight:", weight)
+            print("New Weight:", weight)
+            print("------------------")
+            server.sendPythonObject({"user":user})
+            server.sendPythonObject({"weight":weight,"velostat":velostat})
+            time.sleep(0.1)
+            count += 1
+            # inn = input("Send Data")
+            # if inn  == 'Q':
+                # break
+            # if inn == '':
+                # a, b, testData = simulateMatrixData()
 
-                # Send random information to the client
-                testData = [a, b,testData][randint(0,2)]
-                server.sendPythonObject(testData)
-            else:
-                server.sendPythonObject(inn)
+                # # Send random information to the client
+                # testData = [a, b,testData][randint(0,2)]
+                # server.sendPythonObject(testData)
+            # else:
+                # server.sendPythonObject(inn)
 
+        # server.sendPythonObject({"quit":"quit"})
 
     except KeyboardInterrupt:
         print("closing...")
         server.cleanup()
 
-server.sendPythonObject('quit')
 print("closing...")
 server.cleanup()
 

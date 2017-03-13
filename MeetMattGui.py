@@ -16,7 +16,6 @@ class Communicate(QObject):
     writeData = pyqtSignal()
     clearData = pyqtSignal()
 
-
 class Ui_MainWindow(object):
     ''' Main GUI class containing all of the GUI objects and their
     initializations methods. '''

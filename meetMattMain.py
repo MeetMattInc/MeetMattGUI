@@ -1,4 +1,4 @@
-import pickle, time, os
+import pickle, time, os, queue
 from MeetMattGui import *
 from simulateMatrixData import simulateMatrixData
 from GuiMatrixClient import *
@@ -6,32 +6,56 @@ from GuiMatrixClient import *
 obj_type = ''
 value = ''
 runThread = True
+guiUpdatedFlag = False
+dataQueue = queue.Queue()
 
-class AThread(QThread):
+class SignalThread(QThread):
     ''' Defines a new thread that's used to update the velostat matrix values.
     The thread calls the pySignal object (Communicate) which tirggers the
     setMatrix function.'''
 
-    def __init__(self, event, client):
+    def __init__(self, event):
         super().__init__()
         self.event = event
+
+    def run(self):
+        global runThread
+        global guiUpdatedFlag
+        global dataQueue
+
+        while runThread:
+            while True:
+                if dataQueue.empty():
+                    # print("Queue is empty")
+                    continue
+                print("Emitting signal")
+                self.event.writeData.emit()
+                while not guiUpdatedFlag:
+                    continue
+                guiUpdatedFlag = False
+
+
+class DataThread(QThread):
+    ''''.'''
+
+    def __init__(self, client):
+        super().__init__()
         self.client = client
 
     def run(self):
-        global obj_type
-        global value
         global runThread
+        global dataQueue
 
         while runThread:
-            obj_type, value = self.client.getDataAndType()
+            value = self.client.getDataAndType()
+            print("Value:", value)
             if value == '':
+                print("Nothing")
                 continue
-            # elif value == 'quit':
-                # break
-            self.event.writeData.emit()
-            time.sleep(2)
-
-
+            elif value == None:
+                print("None")
+                continue
+            dataQueue.put((obj_type, value))
 
 
 class MattGui(Ui_MainWindow):
@@ -42,8 +66,8 @@ class MattGui(Ui_MainWindow):
         self.event.writeData.connect(self.setMatrix)
         self.event.clearData.connect(self.clearMatrix)
         self.client = GuiMatrixClient()
-        self.thread = AThread(self.event, self.client)
-
+        self.thread = SignalThread(self.event)
+        self.dataThread = DataThread(self.client)
 
     def close_application(self):
         global runThread
@@ -58,31 +82,29 @@ class MattGui(Ui_MainWindow):
         sys.exit()
 
     def setMatrix(self):
-        global obj_type
-        global value
-        global runThread
+        global guiUpdatedFlag
 
-        if obj_type == list:
-            print('We got a list!')
+        obj_type, value = dataQueue.get()
+        if "velostat" in value:
+            print('Weight and velostat')
+            self.lineEdit_2.setText(str(value["velostat"]))
             for row in range(29):
                 for col in range(43):
-                    if value[row][col]:
+                    if value["velostat"][row][col]:
                         self.matrix[row][col].setStyleSheet("QFrame { background-color: green }")
                     else:
                         self.matrix[row][col].setStyleSheet("QFrame { background-color: rgb(236,236,236)}")
-        elif obj_type == str:
-            print('We got a string')
-            self.lineEdit.setText(value)
-        elif obj_type == float:
-            print('We got a float')
-            self.lineEdit_2.setText(value)
-        else:
-            print('Its a mystery')
+        if "user" in  value:
+            self.lineEdit.setText(value["user"])
+        if "wieght" in value:
+            self.lineEdit_2.setText(str(value["weight"]))
+
         value = ''
         obj_type = ''
+        guiUpdatedFlag = True
+
 
     def clearMatrix(self):
-
         self.lineEdit.setText('')
         self.lineEdit_2.setText('')
 
@@ -90,14 +112,15 @@ class MattGui(Ui_MainWindow):
             for col in range(43):
                 self.matrix[row][col].setStyleSheet("QFrame { background-color: rgb(236,236,236)}")
 
-
+    # Starts the thread that updates the GUI values
     def loopThread(self):
         self.thread.start()
-        self.threadDone = False
+        self.dataThread.start()
 
 
 
 def main():
+
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = MattGui(MainWindow)
