@@ -5,17 +5,23 @@ import socket, sys, pickle, time, json
 class GuiMatrixClient():
     def __init__(self):
         self.HOST = 'localhost'
-        self.HOST = '192.168.2.201'
+        #self.HOST = '192.168.2.201'
         self.PORT = 1000
         self.clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.clientsocket.connect((self.HOST, self.PORT))
+        self.filehandle = self.clientsocket.makefile(mode='r')
 
 
     def getDataValues(self):
         try:
-            filehandle = self.clientsocket.makefile(mode='r')
-            line = filehandle.readline()
-            print(len(line))
+            while True:
+                line = self.filehandle.readline()
+                if line:
+                    break
+                time.sleep(0.001)
+
+            #print("decoding: %s"%(line))
+            #print(len(line))
             return json.loads(line)
 
         except KeyboardInterrupt:
