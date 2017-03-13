@@ -24,6 +24,7 @@ class MeetMattGUIServer():
         # self.connection.sendall(pickledObject)
         # self.connection.sendall(str.encode('.\n'))
         data = json.dumps(obj).encode('utf-8')
+        print("sent", data)
         self.connection.sendall(data)
         self.connection.sendall('\n'.encode('utf-8'))
 
@@ -73,6 +74,6 @@ if __name__ == "__main__":
         print("closing...")
         server.cleanup()
 
-print("closing...")
-server.cleanup()
+#print("closing...")
+#server.cleanup()
 

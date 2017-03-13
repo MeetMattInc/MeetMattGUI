@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import pickle, time, os, queue
 from MeetMattGui import *
 from simulateMatrixData import simulateMatrixData
