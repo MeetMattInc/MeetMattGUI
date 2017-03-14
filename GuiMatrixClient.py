@@ -21,7 +21,7 @@ class GuiMatrixClient():
                 time.sleep(0.001)
 
             #print("decoding: %s"%(line))
-            print(len(line))
+            print("Packet of length %d bytes recvd"%(len(line)))
             return json.loads(line)
 
         except KeyboardInterrupt:

@@ -32,14 +32,14 @@ class SignalThread(QThread):
         while runThread:
             while True:
                 if dataQueue.empty():
-                    print("Queue is empty")
+                    #print("Queue is empty")
                     continue
-                print("Emitting signal ",str(datetime.datetime.now()))
-                print("Emitting signal")
+            #print("Emitting signal ",str(datetime.datetime.now()))
+                # print("Emitting signal")
                 self.event.writeData.emit()
                 while not guiUpdatedFlag:
                     continue
-                print("GUI Updated ",str(datetime.datetime.now()))
+                        #print("GUI Updated ",str(datetime.datetime.now()))
                 guiUpdatedFlag = False
 
 
@@ -94,10 +94,10 @@ class MattGui(Ui_MainWindow):
     def setMatrix(self):
         global guiUpdatedFlag
 
-        print("start ",str(datetime.datetime.now()))
+#print("start ",str(datetime.datetime.now()))
         obj_type, value = dataQueue.get()
         if "velostat" in value:
-            print('Weight and velostat')
+            print('updating velostat')
             #self.lineEdit_2.setText(str(value["velostat"]))
             pMap = value["velostat"]
             for row in range(29):
@@ -107,14 +107,16 @@ class MattGui(Ui_MainWindow):
                     else:
                         self.matrix[row][col].setStyleSheet("QFrame { background-color: rgb(236,236,236)}")
         if "user" in  value:
+            print('updating user')
             self.lineEdit.setText(value["user"])
-        if "wieght" in value:
+        if "weight" in value:
+            print('updating weight')
             self.lineEdit_2.setText(str(value["weight"]))
 
         value = ''
         obj_type = ''
         guiUpdatedFlag = True
-        print("stop ",str(datetime.datetime.now()))
+#print("stop ",str(datetime.datetime.now()))
 
     def clearMatrix(self):
         self.lineEdit.setText('')
