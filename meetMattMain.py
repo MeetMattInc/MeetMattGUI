@@ -95,6 +95,7 @@ class MattGui(Ui_MainWindow):
         sys.exit()
 
     def setUser(self, userId):
+
         if userId == 'u':
             userString = 'Unknown User'
         elif userId == 'a':
@@ -107,6 +108,9 @@ class MattGui(Ui_MainWindow):
             userString = 'Marc'
         elif userId == 'd':
             userString = 'Detecting ...'
+        else:
+            userString = userId
+    
 
         self.lineEdit.setText(userString)
 
