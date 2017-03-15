@@ -5,6 +5,7 @@ from MainGui import *
 from simulateMatrixData import simulateMatrixData
 from GuiMatrixClient import *
 import datetime
+import VelostatFeatureExtraction as vfe
 import scipy.ndimage
 import numpy as np
 
@@ -127,7 +128,7 @@ class MattGui(Ui_MainWindow):
             pMapm = np.array(pMap)
             pMap = scipy.ndimage.morphology.binary_erosion(pMap)
             
-            
+            (diag, area) = vfe.getDiagonalAndArea(pMap, binaryErosion = False)
             
             for row in range(29):
                 for col in range(43):
