@@ -18,10 +18,10 @@ class GuiMatrixClient():
                 line = self.filehandle.readline()
                 if line:
                     break
-                time.sleep(0.001)
+                time.sleep(0.0001)
 
             #print("decoding: %s"%(line))
-            print("Packet of length %d bytes recvd"%(len(line)))
+            #print("Packet of length %d bytes recvd"%(len(line)))
             return json.loads(line)
 
         except KeyboardInterrupt:
@@ -46,7 +46,7 @@ if __name__ == "__main__":
             continue
         elif value == 'quit':
             break
-        time.sleep(0.001)
+        time.sleep(0.0001)
 
     print("Connection closed.")
     client.closeConnection()

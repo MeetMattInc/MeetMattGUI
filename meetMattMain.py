@@ -1,16 +1,18 @@
 #!/usr/bin/python3
 
 import pickle, time, os, queue
-from MeetMattGui import *
+from MainGui import *
 from simulateMatrixData import simulateMatrixData
 from GuiMatrixClient import *
 import datetime
+import scipy.ndimage
+import numpy as np
 
 obj_type = ''
 value = ''
 runThread = True
 guiUpdatedFlag = False
-dataQueue = queue.Queue()
+dataQueue = queue.Queue(maxsize=2)
 
 class SignalThread(QThread):
     ''' Defines a new thread that's used to update the velostat matrix values.
@@ -27,7 +29,7 @@ class SignalThread(QThread):
         global guiUpdatedFlag
         global dataQueue
 
-        self.setPriority(QThread.HighestPriority)
+#self.setPriority(QThread.HighestPriority)
 
         while runThread:
             while True:
@@ -54,7 +56,7 @@ class DataThread(QThread):
         global runThread
         global dataQueue
 
-        self.setPriority(QThread.LowestPriority)
+#self.setPriority(QThread.LowestPriority)
 
         while runThread:
             value = self.client.getDataAndType()
@@ -66,6 +68,7 @@ class DataThread(QThread):
                 print("None")
                 continue
             dataQueue.put((obj_type, value))
+            print(dataQueue.qsize())
 
 
 class MattGui(Ui_MainWindow):
@@ -100,6 +103,11 @@ class MattGui(Ui_MainWindow):
             print('updating velostat')
             #self.lineEdit_2.setText(str(value["velostat"]))
             pMap = value["velostat"]
+            pMapm = np.array(pMap)
+            pMap = scipy.ndimage.morphology.binary_erosion(pMap)
+            
+            #pMap = scipy.ndimage.morphology.binary_dilation(np.array(pMap))
+            
             for row in range(29):
                 for col in range(43):
                     if pMap[row][col]:
@@ -111,7 +119,7 @@ class MattGui(Ui_MainWindow):
             self.lineEdit.setText(value["user"])
         if "weight" in value:
             print('updating weight')
-            self.lineEdit_2.setText(str(value["weight"]))
+            self.lineEdit_2.setText(str(round(value["weight"])))
 
         value = ''
         obj_type = ''
