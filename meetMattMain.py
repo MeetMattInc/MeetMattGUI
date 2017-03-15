@@ -12,7 +12,7 @@ obj_type = ''
 value = ''
 runThread = True
 guiUpdatedFlag = False
-dataQueue = queue.Queue(maxsize=2)
+dataQueue = queue.Queue()
 
 class SignalThread(QThread):
     ''' Defines a new thread that's used to update the velostat matrix values.
