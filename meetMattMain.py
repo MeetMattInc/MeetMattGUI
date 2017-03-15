@@ -94,6 +94,22 @@ class MattGui(Ui_MainWindow):
         self.thread = None
         sys.exit()
 
+    def setUser(self, userId):
+        if userId == 'u':
+            userString = 'Unknown User'
+        elif userId == 'a':
+            userString = 'Anthony'
+        elif userId == 'l':
+            userString = 'Lucas'
+        elif userId == 't':
+            userString = 'Tian'
+        elif userId == 'm':
+            userString = 'Marc'
+        elif userId == 'd':
+            userString = 'Detecting ...'
+
+        self.lineEdit.setText(userString)
+
     def setMatrix(self):
         global guiUpdatedFlag
 
@@ -103,10 +119,11 @@ class MattGui(Ui_MainWindow):
             print('updating velostat')
             #self.lineEdit_2.setText(str(value["velostat"]))
             pMap = value["velostat"]
+
             pMapm = np.array(pMap)
             pMap = scipy.ndimage.morphology.binary_erosion(pMap)
             
-            #pMap = scipy.ndimage.morphology.binary_dilation(np.array(pMap))
+            
             
             for row in range(29):
                 for col in range(43):
@@ -116,7 +133,9 @@ class MattGui(Ui_MainWindow):
                         self.matrix[row][col].setStyleSheet("QFrame { background-color: rgb(236,236,236)}")
         if "user" in  value:
             print('updating user')
-            self.lineEdit.setText(value["user"])
+            self.setUser(value["user"])
+        
+        
         if "weight" in value:
             print('updating weight')
             self.lineEdit_2.setText(str(round(value["weight"])))
