@@ -13,7 +13,7 @@ def getDiagonalAndArea(pMap, binaryErosion = True):
     objectsFound = ndimage.measurements.find_objects(npArray)
     
     if len(objectsFound) == 0:
-        return (None, None)
+        return (0, 0)
 
     maxDiag = 0
     objectForMaxDaig = None

@@ -109,11 +109,13 @@ class MattGui(Ui_MainWindow):
             userString = 'Marc'
         elif userId == 'd':
             userString = 'Detecting ...'
+        elif userId == 'n':
+            userString = 'No User on Matt'
         else:
             userString = userId
     
 
-        self.lineEdit.setText(userString)
+        self.userValueLabel.setText(userString)
 
     def setMatrix(self):
         global guiUpdatedFlag
@@ -129,6 +131,8 @@ class MattGui(Ui_MainWindow):
             pMap = scipy.ndimage.morphology.binary_erosion(pMap)
             
             (diag, area) = vfe.getDiagonalAndArea(pMap, binaryErosion = False)
+            self.diagonalValueLabel.setText("%.2f" % round(diag,2))
+            self.areaValueLabel.setText(str(area))
             
             for row in range(29):
                 for col in range(43):
@@ -143,7 +147,7 @@ class MattGui(Ui_MainWindow):
         
         if "weight" in value:
             print('updating weight')
-            self.lineEdit_2.setText(str(round(value["weight"])))
+            self.weightValueLabel.setText(str(round(value["weight"])))
 
         value = ''
         obj_type = ''
