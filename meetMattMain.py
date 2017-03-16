@@ -23,6 +23,7 @@ class SignalThread(QThread):
     def __init__(self, event):
         super().__init__()
         self.event = event
+        self.userValueLabel.setText('No User on Matt')
         #self.setPriority()
 
     def run(self):
@@ -139,7 +140,7 @@ class MattGui(Ui_MainWindow):
                     if pMap[row][col]:
                         self.matrix[row][col].setStyleSheet("QFrame { background-color: green }")
                     else:
-                        self.matrix[row][col].setStyleSheet("QFrame { background-color: rgb(236,236,236)}")
+                        self.matrix[row][col].setStyleSheet("QFrame { background-color: white }")
         if "user" in  value:
             print('updating user')
             self.setUser(value["user"])
@@ -160,7 +161,7 @@ class MattGui(Ui_MainWindow):
 
         for row in range(29):
             for col in range(43):
-                self.matrix[row][col].setStyleSheet("QFrame { background-color: rgb(236,236,236)}")
+                self.matrix[row][col].setStyleSheet("QFrame { background-color: white }")
 
     # Starts the thread that updates the GUI values
     def loopThread(self):
