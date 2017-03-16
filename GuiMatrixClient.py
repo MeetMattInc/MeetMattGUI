@@ -6,6 +6,7 @@ class GuiMatrixClient():
     def __init__(self):
         self.HOST = 'localhost'
         self.HOST = '192.168.2.201'
+        #self.HOST = 'raspberrypi.local'
         self.PORT = 1000
         self.clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.clientsocket.connect((self.HOST, self.PORT))

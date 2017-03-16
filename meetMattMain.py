@@ -23,7 +23,6 @@ class SignalThread(QThread):
     def __init__(self, event):
         super().__init__()
         self.event = event
-        self.userValueLabel.setText('No User on Matt')
         #self.setPriority()
 
     def run(self):
@@ -167,6 +166,7 @@ class MattGui(Ui_MainWindow):
     def loopThread(self):
         self.thread.start()
         self.dataThread.start()
+        self.userValueLabel.setText('No User on Matt')
 
 
 
