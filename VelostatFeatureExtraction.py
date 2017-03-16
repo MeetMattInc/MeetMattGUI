@@ -5,12 +5,17 @@ import math
 #print("running...")
 
 def getDiagonalAndArea(pMap, binaryErosion = True):
+
     npArray = np.array(pMap)
-
     if binaryErosion:
-        npArray = ndimage.morphology.binaryErosion(npArray)
+        npArray = ndimage.morphology.binary_erosion(npArray)
+    
+    labeled, n = ndimage.measurements.label(npArray)
 
-    objectsFound = ndimage.measurements.find_objects(npArray)
+    if n == 0:
+        return (0, 0)
+
+    objectsFound = ndimage.measurements.find_objects(labeled)
     
     if len(objectsFound) == 0:
         return (0, 0)

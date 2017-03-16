@@ -49,13 +49,14 @@ class SignalThread(QThread):
 class DataThread(QThread):
     ''''.'''
 
-    def __init__(self, client):
+    def __init__(self):
         super().__init__()
-        self.client = client
 
     def run(self):
         global runThread
         global dataQueue
+
+        self.client = GuiMatrixClient()
 
 #self.setPriority(QThread.LowestPriority)
 
@@ -69,7 +70,9 @@ class DataThread(QThread):
                 print("None")
                 continue
             dataQueue.put((obj_type, value))
-            print(dataQueue.qsize())
+            print("Queue backlog %d"%dataQueue.qsize())
+
+        self.client.closeConnection()
 
 
 class MattGui(Ui_MainWindow):
@@ -79,9 +82,8 @@ class MattGui(Ui_MainWindow):
         self.event = Communicate()
         self.event.writeData.connect(self.setMatrix)
         self.event.clearData.connect(self.clearMatrix)
-        self.client = GuiMatrixClient()
         self.thread = SignalThread(self.event)
-        self.dataThread = DataThread(self.client)
+        self.dataThread = DataThread()
 
     def close_application(self):
         global runThread
@@ -89,7 +91,6 @@ class MattGui(Ui_MainWindow):
 
         print("Sending clear signal")
         self.event.clearData.emit()
-        self.client.closeConnection()
         self.thread.quit()
         self.thread.wait()
         self.thread = None
