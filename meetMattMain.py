@@ -8,6 +8,7 @@ import datetime
 import VelostatFeatureExtraction as vfe
 import scipy.ndimage
 import numpy as np
+from IOTTrigger import *
 
 obj_type = ''
 value = ''
@@ -84,6 +85,8 @@ class MattGui(Ui_MainWindow):
         self.event.clearData.connect(self.clearMatrix)
         self.thread = SignalThread(self.event)
         self.dataThread = DataThread()
+        
+        self.profileThread = IOTTrigger()
 
     def close_application(self):
         global runThread
@@ -108,14 +111,16 @@ class MattGui(Ui_MainWindow):
             userString = 'Tian'
         elif userId == 'm':
             userString = 'Marc'
+            userString = 'Marc'
+            userString = 'Anthony'
         elif userId == 'd':
             userString = 'Detecting ...'
         elif userId == 'n':
             userString = 'No User on Matt'
         else:
             userString = userId
-    
 
+        self.profileThread.profileName(userString)
         self.userValueLabel.setText(userString)
 
     def setMatrix(self):
@@ -130,11 +135,11 @@ class MattGui(Ui_MainWindow):
 
             pMapm = np.array(pMap)
             pMap = scipy.ndimage.morphology.binary_erosion(pMap)
-            
+
             (diag, area) = vfe.getDiagonalAndArea(pMap, binaryErosion = False)
             self.diagonalValueLabel.setText("%.2f" % round(diag,2))
             self.areaValueLabel.setText(str(area))
-            
+
             for row in range(29):
                 for col in range(43):
                     if pMap[row][col]:
